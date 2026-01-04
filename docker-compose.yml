@@ -1,22 +1,26 @@
 name: qdrant
+
 services:
   qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant
-    hostname: qdrant
-    networks:
-      - shared_network
-    restart: always
+    restart: unless-stopped
+
     ports:
-      - '6333:6333'
+      - "6333:6333"
+      - "6334:6334" # gRPC (optional but recommended)
+
     environment:
-      QDRANT__TELEMETRY_DISABLED: true
+      QDRANT__TELEMETRY_DISABLED: "true"
       QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY}
       QDRANT__LOG_LEVEL: WARN
+
     volumes:
-      - ./data/qdrant:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
+
 networks:
-  shared_network:
-    name: shared_network
+  default:
     driver: bridge
-    external: true
+
+volumes:
+  qdrant_storage:
